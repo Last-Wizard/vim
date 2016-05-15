@@ -8,8 +8,70 @@ call vundle#begin()
 
 " 指定vundle安装插件的路径
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'tpope/vim-fugitive'
 
+" ==========================================
+" 状态栏显示, 侧边栏显示
+" ==========================================
+
+" nerdtree, nerdtree-tabs, nerdtree-git-plugin
+Plugin 'scrooloose/nerdtree'
+Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
+
+" airline
+" 状态栏增强展示
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+
+" rainbow_parentheses
+" 括号显示增强
+Plugin 'kien/rainbow_parentheses.vim'
+
+" 主题 solarized
+" solarized
+Plugin 'altercation/vim-colors-solarized'
+
+" molokai
+" 主题 molokai
+Plugin 'tomasr/molokai'
 
 " 所有的插件需要在下面这行之前
 call vundle#end()
+
+
+
+" ==========================================
+" 配置nerdtree, nerdtree-tabs, nerdtree-git-plugin
+" nerdtree nerdtreetabs {{{
+    map <leader>n :NERDTreeToggle<CR>
+    let NERDTreeHighlightCursorline=1
+    let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.obj$', '\.o$', '\.so$', '\.egg$', '^\.git$', '^\.svn$', '^\.hg$' ]
+    "close vim if the only window left open is a NERDTree
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | end
+    " s/v 分屏打开文件
+    let g:NERDTreeMapOpenSplit = 's'
+    let g:NERDTreeMapOpenVSplit = 'v'
+
+    " nerdtreetabs
+    map <Leader>n <plug>NERDTreeTabsToggle<CR>
+    " 关闭同步
+    let g:nerdtree_tabs_synchronize_view=0
+    let g:nerdtree_tabs_synchronize_focus=0
+    " 是否自动开启nerdtree
+    let g:nerdtree_tabs_open_on_console_startup=0
+    let g:nerdtree_tabs_open_on_gui_startup=0
+    
+    let g:NERDTreeIndicatorMapCustom = {
+        \ "Modified"  : "✹",
+        \ "Staged"    : "✚",
+        \ "Untracked" : "✭",
+        \ "Renamed"   : "➜",
+        \ "Unmerged"  : "═",
+        \ "Deleted"   : "✖",
+        \ "Dirty"     : "✗",
+        \ "Clean"     : "✔︎",
+        \ "Unknown"   : "?" 
+        \ }
+" }}}
+
+
