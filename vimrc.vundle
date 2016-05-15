@@ -1,0 +1,12 @@
+" 去除VI一致性, 必须
+set nocompatible
+filetype off
+
+" 设置包括vundle和初始化相关的runtime path
+call vundle#begin('~/.vim/vundle')
+
+" 指定vundle安装插件的路径
+Plugin 'VundleVim/Vundle.vim'
+
+" 所有的插件需要在下面这行之前
+call vundle#end()
