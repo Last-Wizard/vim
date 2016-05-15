@@ -3,10 +3,13 @@ set nocompatible
 filetype off
 
 " 设置包括vundle和初始化相关的runtime path
-call vundle#begin('~/.vim/vundle')
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 
 " 指定vundle安装插件的路径
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'tpope/vim-fugitive'
+
 
 " 所有的插件需要在下面这行之前
 call vundle#end()
