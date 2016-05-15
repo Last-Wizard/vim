@@ -2,6 +2,16 @@
 set nocompatible
 filetype off
 
+" ==========================================
+" 插件管理
+" ==========================================
+" inspired by spf13, 自定义需要的插件集合
+if !exists('g:bundle_groups')
+    " let g:bundle_groups=['python', 'javascript', 'markdown', 'html', 'css', 'tmux', 'beta', 'json', 'nginx', 'golang', 'ruby', 'less', 'php', 'coffeescript']
+    let g:bundle_groups=['python', 'markdown', 'json']
+endif
+
+
 " 设置包括vundle和初始化相关的runtime path
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -18,6 +28,9 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'Xuyuanp/nerdtree-git-plugin'
 
+" multi tabs
+Plugin 'dyng/ctrlsf.vim'
+
 " crlspace
 Plugin 'vim-ctrlspace/vim-ctrlspace'
 
@@ -30,11 +43,42 @@ Plugin 'vim-airline/vim-airline-themes'
 " 括号显示增强
 Plugin 'kien/rainbow_parentheses.vim'
 
+" 自动补全单引号，双引号等
+Plugin 'Raimondi/delimitMate'
+" 自动补全html/xml标签
+Plugin 'docunext/closetag.vim'
+" 自动补全
+Plugin 'Valloric/YouCompleteMe'
+
+" 相对/绝对行号跳转
+Plugin 'jeffkreeftmeijer/vim-numbertoggle'
+
 " 主题 solarized
 Plugin 'altercation/vim-colors-solarized'
 
 " 主题 molokai
 Plugin 'tomasr/molokai'
+
+
+" 如果bundle_groups定义了python
+if count(g:bundle_groups, 'python')
+    " for python.vim syntax highlight
+    Plugin 'hdima/python-syntax'
+    Plugin 'hynek/vim-python-pep8-indent'
+    Plugin 'Glench/Vim-Jinja2-Syntax'
+endif
+
+" 如果bundle_groups定义了markdown
+if count(g:bundle_groups, 'markdown')
+    Plugin 'plasticboy/vim-markdown', {'for': 'md'}
+endif
+
+" 如果bundle_groups定义了json
+if count(g:bundle_groups, 'json')
+    Plugin 'elzr/vim-json', {'for': 'json'}
+endif
+
+
 
 " 所有的插件需要在下面这行之前
 call vundle#end()
@@ -76,6 +120,89 @@ call vundle#end()
 " }}}
 
 " ==========================================
+" 配置delimitMate, closetag
+" delimitMate {{{
+    " for python docstring ", 优化输入
+    au FileType python let b:delimitMate_nesting_quotes = ['"']
+    au FileType php let delimitMate_matchpairs = "(:),[:],{:}"
+    " 关闭某些类型文件的自动补全
+    "au FileType mail let b:delimitMate_autoclose = 0
+" }}}
+
+
+" closetag {{{
+    let g:closetag_html_style=1
+" }}}
+
+" ==========================================
+" 配置YouCompleteMe
+" YouCompleteMe {{{
+    "youcompleteme  默认tab  s-tab 和自动补全冲突
+    "let g:ycm_key_list_select_completion=['<c-n>']
+    let g:ycm_key_list_select_completion = ['<Down>']
+    "let g:ycm_key_list_previous_completion=['<c-p>']
+    let g:ycm_key_list_previous_completion = ['<Up>']
+    let g:ycm_complete_in_comments = 1  "在注释输入中也能补全
+    let g:ycm_complete_in_strings = 1   "在字符串输入中也能补全
+    let g:ycm_use_ultisnips_completer = 1 "提示UltiSnips
+    let g:ycm_collect_identifiers_from_comments_and_strings = 1   "注释和字符串中的文字也会被收入补全
+    let g:ycm_collect_identifiers_from_tags_files = 1
+    " 开启语法关键字补全
+    let g:ycm_seed_identifiers_with_syntax=1
+
+    "let g:ycm_seed_identifiers_with_syntax=1   "语言关键字补全, 不过python关键字都很短，所以，需要的自己打开
+
+    " 跳转到定义处, 分屏打开
+    let g:ycm_goto_buffer_command = 'horizontal-split'
+    " nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+    nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+    nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
+
+    " 引入，可以补全系统，以及python的第三方包 针对新老版本YCM做了兼容
+    " old version
+    if !empty(glob("~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"))
+        let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"
+    endif
+    " new version
+    if !empty(glob("~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"))
+        let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
+    endif
+
+    " 直接触发自动补全 insert模式下
+    " let g:ycm_key_invoke_completion = '<C-Space>'
+    " 黑名单,不启用
+    let g:ycm_filetype_blacklist = {
+        \ 'tagbar' : 1,
+        \ 'gitcommit' : 1,
+        \}
+" }}}
+
+
+" ==========================================
+" 配置ctrlsf
+" ctrlsf {{{
+    nmap \ <Plug>CtrlSFCwordPath<CR>
+    " let g:ctrlsf_position = 'below'
+    " let g:ctrlsf_winsize = '30%'
+    let g:ctrlsf_auto_close = 0
+    let g:ctrlsf_confirm_save = 0
+    " Note: cannot use <CR> or <C-m> for open
+    " Use : <sapce> or <tab>
+    let g:ctrlsf_mapping = {
+        \ "open"  : "<Space>",
+        \ "openb" : "O",
+        \ "tab"   : "t",
+        \ "tabb"  : "T",
+        \ "prevw" : "p",
+        \ "quit"  : "q",
+        \ "next"  : "<C-J>",
+        \ "prev"  : "<C-K>",
+        \ "pquit" : "q",
+        \ }
+" }}}
+
+
+" ==========================================
 " 配置ctrlspace
 " Vim Workspace Controller
 " ctrlspace {{{
@@ -100,7 +227,6 @@ call vundle#end()
         \ ['darkmagenta', 'DarkOrchid3'],
         \ ['brown',       'firebrick3'],
         \ ['gray',        'RoyalBlue3'],
-        \ ['black',       'SeaGreen3'],
         \ ['darkmagenta', 'DarkOrchid3'],
         \ ['Darkblue',    'firebrick3'],
         \ ['darkgreen',   'RoyalBlue3'],
@@ -114,6 +240,36 @@ call vundle#end()
     au Syntax * RainbowParenthesesLoadRound
     au Syntax * RainbowParenthesesLoadSquare
     au Syntax * RainbowParenthesesLoadBraces
+" }}}
+
+" ################### 语言相关 ###################
+
+" quickrun {{{
+    let g:quickrun_config = {
+    \   "_" : {
+    \       "outputter" : "message",
+    \   },
+    \}
+
+    let g:quickrun_no_default_key_mappings = 1
+    nmap <Leader>r <Plug>(quickrun)
+    map <F10> :QuickRun<CR>
+" }}}
+
+
+" pythonsyntax {{{
+    let python_highlight_all = 1
+" }}}
+
+
+
+" markdown {{{
+    let g:vim_markdown_folding_disabled=1
+" }}}
+
+
+" json {{{
+    let g:vim_json_syntax_conceal = 0
 " }}}
 
 
